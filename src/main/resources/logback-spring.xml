@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<configuration>
+    <appender name="consel" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger [%file:%line] -%msg%n
+            </pattern>
+        </layout>
+    </appender>
+
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger [%file:%line] -%msg%n
+            </pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/home/tomcat/logs/smartlock_service.%d.log</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <root level="debug">
+        <appender-ref ref="consel"/>
+        <appender-ref ref="file"/>
+    </root>
+</configuration>
+

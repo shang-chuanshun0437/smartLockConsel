@@ -1,0 +1,19 @@
+<div class="form-group has-feedback">
+    <input type="tel" class="form-control" id="phone" placeholder="请输入手机号" maxlength=11>
+    <span class="glyphicon glyphicon-earphone form-control-feedback"></span>
+</div>
+<div class="row">
+    <div class="col-xs-6 pull_left">
+        <div class="form-group">
+            <input class="form-control" id="msg_num" placeholder="请输入验证码">
+        </div>
+    </div>
+    <div class="col-xs-6 pull_center">
+        <div class="form-group">
+            <input type="button" class="btn btn-block btn-flat" id="verify_refresh" onclick="getMsgNum(this)" value="免费获取验证码">
+        </div>
+    </div>
+</div>
+<div class="col-xs-12 pull_center">
+    <button type="button" class="btn btn-block btn-flat" onclick="validateNum()">验证</button>
+</div>

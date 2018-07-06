@@ -30,6 +30,10 @@ public class UserInfo
     @Column(name = "token")
     private String token;
 
+    //用户昵称
+    @Column(name = "nick_name")
+    private String nickName;
+
     public String getUserName() {
         return userName;
     }
@@ -70,6 +74,14 @@ public class UserInfo
         this.token = token;
     }
 
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
     @Override
     public String toString() {
         return "UserInfo{" +
@@ -78,5 +90,4 @@ public class UserInfo
                 ", tombTime='" + tombTime + '\'' +
                 '}';
     }
-
 }

@@ -1,20 +1,11 @@
 package com.mutong.smartlock.service.spi;
 
-import com.mutong.smartlock.common.Constant;
-import com.mutong.smartlock.common.ErrorCode;
-import com.mutong.smartlock.common.NamedParmeter;
-import com.mutong.smartlock.common.Result;
-import com.mutong.smartlock.controller.request.LoginRequest;
-import com.mutong.smartlock.controller.response.LoginResponse;
+import com.mutong.smartlock.common.*;
+import com.mutong.smartlock.controller.request.*;
+import com.mutong.smartlock.controller.response.*;
 import com.mutong.smartlock.dao.entity.UserInfo;
 import com.mutong.smartlock.service.UserManage;
 import com.mutong.smartlock.service.exception.UserManageExiception;
-import com.mutong.smartlock.controller.request.AddUserRequest;
-import com.mutong.smartlock.controller.request.DeleteUserRequest;
-import com.mutong.smartlock.controller.request.ModifyUserRequest;
-import com.mutong.smartlock.controller.response.AddUserResponse;
-import com.mutong.smartlock.controller.response.DeleteUserResponse;
-import com.mutong.smartlock.controller.response.ModifyUserResponse;
 import com.mutong.smartlock.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +54,8 @@ public class UserManageSpi implements UserManage
             //校验用户名
             checkUserName(userName);
 
-            //注册时生成token，存入数据库，为永久token
-            String token = this.getToken();
+            //注册时生成token，存入数据库，为永久token，只有在密码修改的时候才会变动
+            String token = UUID.randomUUID().toString();
 
             //将token存入Redis,采用map方式存储
             redisTemplate.opsForHash().put(userName ,Constant.TOKEN,token);
@@ -149,7 +140,7 @@ public class UserManageSpi implements UserManage
         String token = dbUserInfo.getToken();
         if(StringUtils.isEmpty(token))
         {
-            token = this.getToken();
+            token = UUID.randomUUID().toString();
             dbUserInfo.setToken(token);
             userInfoServiceSpi.save(dbUserInfo);
             redisTemplate.opsForHash().put(userName,Constant.TOKEN,token);
@@ -178,7 +169,44 @@ public class UserManageSpi implements UserManage
 
         response.setToken(token);
 
-        logger.debug("exit login,login success,user name:{}",request.getUserName());
+        logger.debug("exit login(),login success,user name:{}",request.getUserName());
+        return response;
+    }
+
+    @Override
+    public ModifyPwdResponse modifyPwd(ModifyPwdRequest request)
+    {
+        //修改密码的时候，生成新的token
+
+        if( logger.isDebugEnabled() )
+        {
+            logger.debug("inter modifyPwd(), the user name is:{}",request.getUserName());
+        }
+
+        ModifyPwdResponse response = new ModifyPwdResponse();
+
+        Result result = new Result();
+        result.setRetcode(ErrorCode.SUCCESS);
+        result.setRetmsg("success");
+
+        response.setResult(result);
+
+        //去数据库校验当前密码是否正确
+        UserInfo userInfo = userInfoServiceSpi.findByUserName(request.getUserName());
+        LockAssert.isTrue(userInfo != null,ErrorCode.USERNAME_NOT_EXIST,"user not exist!");
+        LockAssert.isTrue(userInfo.getPassword().equals(request.getOldpassword()),ErrorCode.PASSWORD_ERROR,"password is error");
+
+        //生成新的token
+        String token = UUID.randomUUID().toString();
+        //将token写入redis
+        redisTemplate.opsForHash().put(request.getUserName(),Constant.TOKEN,token);
+        //将token和新密码写入数据库
+        userInfo.setPassword(request.getNewpassword());
+        userInfo.setToken(token);
+        userInfoServiceSpi.save(userInfo);
+        //将token返回
+        response.setToken(token);
+
         return response;
     }
 
@@ -197,14 +225,14 @@ public class UserManageSpi implements UserManage
         }
     }
 
-    private String getToken()
+    /*private String getToken()
     {
         //为了节省内存空间，只取前15位
         String uuid = UUID.randomUUID().toString();
         String temp = uuid.substring(0,15);
 
         return temp;
-    }
+    }*/
 
     public UserInfoServiceSpi getUserInfoServiceSpi() {
         return userInfoServiceSpi;

@@ -27,6 +27,9 @@ public class ErrorCode
     //redis中refreshToken和请求中的refreshToken不一致
     public static String REFRESHTOKEN_IS_INVALID = "100010";
 
+    //数据库查询失败
+    public static String MYSQL_ERROR = "100011";
+
     public static class DeviceErrorCode
     {
         //数据库中不存在该设备

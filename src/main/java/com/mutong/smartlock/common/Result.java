@@ -2,11 +2,17 @@ package com.mutong.smartlock.common;
 
 public class Result
 {
-    private String retcode = "000000";
+    private String retcode;
 
     private String retmsg;
 
     private NamedParmeter[] extendsInfo;
+
+    public Result()
+    {
+        this.retcode =ErrorCode.SUCCESS;
+        this.retmsg = "success";
+    }
 
     public String getRetcode() {
         return retcode;

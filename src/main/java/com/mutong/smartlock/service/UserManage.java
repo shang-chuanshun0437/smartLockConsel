@@ -7,10 +7,6 @@ public interface UserManage
 {
     AddUserResponse addUser(AddUserRequest request);
 
-    DeleteUserResponse deleteUser(DeleteUserRequest request);
-
-    ModifyUserResponse modifyUser(ModifyUserRequest request);
-
     LoginResponse login(LoginRequest request);
 
     ModifyPwdResponse modifyPwd(ModifyPwdRequest request);

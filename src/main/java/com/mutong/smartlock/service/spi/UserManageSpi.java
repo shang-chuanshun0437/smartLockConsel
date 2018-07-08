@@ -86,18 +86,6 @@ public class UserManageSpi implements UserManage
         return addUserResponse;
     }
 
-    @Override
-    public DeleteUserResponse deleteUser(DeleteUserRequest request)
-    {
-        return null;
-    }
-
-    @Override
-    public ModifyUserResponse modifyUser(ModifyUserRequest request)
-    {
-        return null;
-    }
-
     /*
     *使用用户名和密码登录
      */

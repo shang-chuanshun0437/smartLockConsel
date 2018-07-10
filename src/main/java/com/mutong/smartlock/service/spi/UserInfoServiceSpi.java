@@ -15,28 +15,14 @@ public class UserInfoServiceSpi implements UserInfoService
     UserInfoDao userInfoDao;
 
     @Override
-    public UserInfo findByUserName(String userName) {
-        return userInfoDao.findByUserName(userName);
-    }
-
-    @Override
-    public List<UserInfo> findAll() {
-        return userInfoDao.findAll();
-    }
-
-    @Override
-    public List<UserInfo> findByUserNameLike(String userNam) {
-        return userInfoDao.findByUserNameLike(userNam);
+    public UserInfo findByPhoneNum(String phoneNum)
+    {
+        return userInfoDao.findByPhoneNum(phoneNum);
     }
 
     @Override
     public UserInfo save(UserInfo userInfo) {
         return userInfoDao.save(userInfo);
-    }
-
-    @Override
-    public int deleteByUserName(String userName) {
-        return userInfoDao.deleteByUserName(userName);
     }
 
 }

@@ -6,6 +6,10 @@ import javax.validation.constraints.Size;
 
 public class AddUserRequest
 {
+    @NotBlank(message = "user phone can not be null")
+    @Size(min = 11,max = 11)
+    private String phoneNum;
+
     @NotBlank(message = "user name can not be null")
     @Size(min = 11,max = 11)
     private String userName;
@@ -16,14 +20,6 @@ public class AddUserRequest
 
     //终端ID即手机的设备ID
     private String terminalId;
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 
     public String getPassword() {
         return password;
@@ -39,5 +35,21 @@ public class AddUserRequest
 
     public void setTerminalId(String terminalId) {
         this.terminalId = terminalId;
+    }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

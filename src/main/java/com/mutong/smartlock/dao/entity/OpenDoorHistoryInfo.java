@@ -28,6 +28,10 @@ public class OpenDoorHistoryInfo
     @Column(name = "device_num")
     private String deviceNum;
 
+    //手机类型
+    @Column(name = "phone_type")
+    private String phoneType;
+
     public String getId() {
         return id;
     }
@@ -66,5 +70,13 @@ public class OpenDoorHistoryInfo
 
     public void setDeviceNum(String deviceNum) {
         this.deviceNum = deviceNum;
+    }
+
+    public String getPhoneType() {
+        return phoneType;
+    }
+
+    public void setPhoneType(String phoneType) {
+        this.phoneType = phoneType;
     }
 }

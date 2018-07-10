@@ -31,7 +31,7 @@ public class UserInfoDaoTest
     @Test
     public void findByUserName()
     {
-        UserInfo userInfo = userInfoDao.findByUserName("2839329922");
+        UserInfo userInfo = userInfoDao.findByPhoneNum("2839329922");
         //System.out.println(userInfo.toString());
     }
 
@@ -49,10 +49,4 @@ public class UserInfoDaoTest
     public void findByUserNameLike() {
     }
 
-    @Test
-    public void deleteTest()
-    {
-        int userInfo = userInfoDao.deleteByUserName("2839329922");
-        System.out.println(userInfo);
-    }
 }

@@ -15,6 +15,11 @@ public class QueryOpenDoorHistoryReq
     @NotBlank(message = "device num can not be null")
     private String deviceNum;
 
+    private String phoneType;
+
+    //查询第几页
+    private int page;
+
     public String getUserName() {
         return userName;
     }
@@ -37,5 +42,21 @@ public class QueryOpenDoorHistoryReq
 
     public void setDeviceNum(String deviceNum) {
         this.deviceNum = deviceNum;
+    }
+
+    public String getPhoneType() {
+        return phoneType;
+    }
+
+    public void setPhoneType(String phoneType) {
+        this.phoneType = phoneType;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
     }
 }

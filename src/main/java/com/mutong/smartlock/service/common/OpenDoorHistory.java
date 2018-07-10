@@ -6,6 +6,9 @@ public class OpenDoorHistory
     //开门时间
     private String openTime;
 
+    //设备类型
+    private String phoneType;
+
     public String getUserName() {
         return userName;
     }
@@ -20,5 +23,13 @@ public class OpenDoorHistory
 
     public void setOpenTime(String openTime) {
         this.openTime = openTime;
+    }
+
+    public String getPhoneType() {
+        return phoneType;
+    }
+
+    public void setPhoneType(String phoneType) {
+        this.phoneType = phoneType;
     }
 }

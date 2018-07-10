@@ -9,14 +9,18 @@ import javax.persistence.Table;
 @Table(name="user_info")
 public class UserInfo
 {
-    //用户名：手机号
+    //手机号
     @Id
-    @Column(name="user_name")
-    private String userName;
+    @Column(name="phone_num")
+    private String phoneNum;
 
     //用户密码
     @Column(name="password")
     private String password;
+
+    //用户名
+    @Column(name="user_name")
+    private String userName;
 
     //创建用户的时间,格式为：20180528
     @Column(name = "create_time")
@@ -29,10 +33,6 @@ public class UserInfo
     //用户token
     @Column(name = "token")
     private String token;
-
-    //用户昵称
-    @Column(name = "nick_name")
-    private String nickName;
 
     public String getUserName() {
         return userName;
@@ -74,14 +74,6 @@ public class UserInfo
         this.token = token;
     }
 
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
-
     @Override
     public String toString() {
         return "UserInfo{" +
@@ -89,5 +81,13 @@ public class UserInfo
                 ", createTime='" + createTime + '\'' +
                 ", tombTime='" + tombTime + '\'' +
                 '}';
+    }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
     }
 }

@@ -54,7 +54,7 @@ public class QueryOpenDoorHistorySpi implements QueryOpenDoorHistoryService
             result.setRetmsg("user not login");
             return respose;
         }
-        respose = getOpenDoorHistory.findOpenDoorHistory(request.getDeviceNum());
+        respose = getOpenDoorHistory.findOpenDoorHistory(request.getDeviceNum(),request.getPage());
 
         return respose;
     }

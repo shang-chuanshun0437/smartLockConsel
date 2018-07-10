@@ -7,21 +7,13 @@ public class ModifyPwdRequest
 {
     @NotBlank(message = "user name can not be null")
     @Size(min = 11,max = 11)
-    private String userName;
+    private String phoneNum;
 
     @NotBlank(message = "password can not be null")
     private String oldpassword;
 
     @NotBlank(message = "new password can not be null")
     private String newpassword;
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 
     public String getOldpassword() {
         return oldpassword;
@@ -37,5 +29,13 @@ public class ModifyPwdRequest
 
     public void setNewpassword(String newpassword) {
         this.newpassword = newpassword;
+    }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
     }
 }

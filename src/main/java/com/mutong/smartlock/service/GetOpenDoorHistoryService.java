@@ -4,5 +4,5 @@ import com.mutong.smartlock.controller.response.QueryOpenDoorHistoryResp;
 
 public interface GetOpenDoorHistoryService
 {
-    QueryOpenDoorHistoryResp findOpenDoorHistory(String deviceNum);
+    QueryOpenDoorHistoryResp findOpenDoorHistory(String deviceNum,int page);
 }

@@ -23,7 +23,7 @@ public class AddUserServiceSpi implements AddUserService
     @Override
     public AddUserResponse addUser(@RequestBody @Valid AddUserRequest request)
     {
-        logger.debug("inter AddUserServiceSpi,login name:{}",request.getUserName());
+        logger.debug("inter AddUserServiceSpi,login name:{}",request.getPhoneNum());
         return userManageSpi.addUser(request);
     }
 }

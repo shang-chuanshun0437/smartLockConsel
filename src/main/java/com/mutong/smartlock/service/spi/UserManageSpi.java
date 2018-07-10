@@ -14,12 +14,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.AssociationOverride;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserManageSpi implements UserManage
@@ -45,26 +41,26 @@ public class UserManageSpi implements UserManage
         AddUserResponse addUserResponse = new AddUserResponse();
 
         Result result = new Result();
-        result.setRetmsg("add user success");
         addUserResponse.setResult(result);
 
-        String userName = request.getUserName();
+        String phoneNum = request.getPhoneNum();
         try
         {
             //校验用户名
-            checkUserName(userName);
+            checkUserName(phoneNum);
 
             //注册时生成token，存入数据库，为永久token，只有在密码修改的时候才会变动
             String token = UUID.randomUUID().toString();
 
             //将token存入Redis,采用map方式存储
-            redisTemplate.opsForHash().put(userName ,Constant.TOKEN,token);
+            redisTemplate.opsForHash().put(phoneNum ,Constant.TOKEN,token);
 
             //将用户信息存入数据库
             UserInfo userInfo = new UserInfo();
 
             userInfo.setCreateTime(DateUtil.yyyyMMddHHmm());
-            userInfo.setUserName(userName);
+            userInfo.setPhoneNum(request.getPhoneNum());
+            userInfo.setUserName(request.getUserName());
             userInfo.setPassword(request.getPassword());
             userInfo.setToken(token);
             userInfo.setTombTime("0");
@@ -87,7 +83,7 @@ public class UserManageSpi implements UserManage
     }
 
     /*
-    *使用用户名和密码登录
+    *使用手机号和密码登录
      */
     @Override
     public LoginResponse login(LoginRequest request)
@@ -105,22 +101,22 @@ public class UserManageSpi implements UserManage
 
         //校验用户和密码
         String password = request.getPassword();
-        String userName = request.getUserName();
+        String phoneNum = request.getPhoneNum();
         String terminalId = request.getTerminalId();
 
-        UserInfo dbUserInfo = userInfoServiceSpi.findByUserName(userName);
+        UserInfo dbUserInfo = userInfoServiceSpi.findByPhoneNum(phoneNum);
         if(dbUserInfo == null)
         {
-            result.setRetcode(ErrorCode.USERNAME_NOT_EXIST);
-            result.setRetmsg("user name not exist in mysql!");
-            logger.error("user name not exist in mysql!user name :{}",userName);
+            result.setRetcode(ErrorCode.USERPHONE_NOT_EXIST);
+            result.setRetmsg("user phone not exist in mysql!");
+            logger.error("user phone not exist in mysql!user name :{}",phoneNum);
             return response;
         }
         else if(!password.equals(dbUserInfo.getPassword()))
         {
             result.setRetcode(ErrorCode.PASSWORD_ERROR);
             result.setRetmsg("password is not right.");
-            logger.error("password is not right.!user name :{}",userName);
+            logger.error("password is not right.!user phone :{}",phoneNum);
             return response;
         }
 
@@ -131,10 +127,10 @@ public class UserManageSpi implements UserManage
             token = UUID.randomUUID().toString();
             dbUserInfo.setToken(token);
             userInfoServiceSpi.save(dbUserInfo);
-            redisTemplate.opsForHash().put(userName,Constant.TOKEN,token);
+            redisTemplate.opsForHash().put(phoneNum,Constant.TOKEN,token);
         }
         //获取上一次登录记录:手机ID、登录时间
-        Map<Object,Object> resultMap= redisTemplate.opsForHash().entries(userName);
+        Map<Object,Object> resultMap= redisTemplate.opsForHash().entries(phoneNum);
         String lastTerminalId = (String)resultMap.get(Constant.LAST_TERMINALID);
         String lastTime = (String)resultMap.get(Constant.LAST_TIME);
         if(!StringUtils.isEmpty(lastTerminalId) || !StringUtils.isEmpty(lastTime))
@@ -152,15 +148,16 @@ public class UserManageSpi implements UserManage
             result.setExtendsInfo(namedParmeters);
         }
         //设置本次登录的时间和手机id
-        redisTemplate.opsForHash().put(userName,Constant.LAST_TERMINALID,request.getTerminalId());
-        redisTemplate.opsForHash().put(userName,Constant.LAST_TIME,DateUtil.yyyyMMddHHmmss());
+        redisTemplate.opsForHash().put(phoneNum,Constant.LAST_TERMINALID,request.getTerminalId());
+        redisTemplate.opsForHash().put(phoneNum,Constant.LAST_TIME,DateUtil.yyyyMMddHHmmss());
 
         response.setToken(token);
 
-        logger.debug("exit login(),login success,user name:{}",request.getUserName());
+        logger.debug("exit login(),login success,user name:{}",request.getPhoneNum());
         return response;
     }
 
+    //
     @Override
     public ModifyPwdResponse modifyPwd(ModifyPwdRequest request)
     {
@@ -168,7 +165,7 @@ public class UserManageSpi implements UserManage
 
         if( logger.isDebugEnabled() )
         {
-            logger.debug("inter modifyPwd(), the user name is:{}",request.getUserName());
+            logger.debug("inter modifyPwd(), the user name is:{}",request.getPhoneNum());
         }
 
         ModifyPwdResponse response = new ModifyPwdResponse();
@@ -180,14 +177,14 @@ public class UserManageSpi implements UserManage
         response.setResult(result);
 
         //去数据库校验当前密码是否正确
-        UserInfo userInfo = userInfoServiceSpi.findByUserName(request.getUserName());
-        LockAssert.isTrue(userInfo != null,ErrorCode.USERNAME_NOT_EXIST,"user not exist!");
+        UserInfo userInfo = userInfoServiceSpi.findByPhoneNum(request.getPhoneNum());
+        LockAssert.isTrue(userInfo != null,ErrorCode.USERPHONE_NOT_EXIST,"user not exist!");
         LockAssert.isTrue(userInfo.getPassword().equals(request.getOldpassword()),ErrorCode.PASSWORD_ERROR,"password is error");
 
         //生成新的token
         String token = UUID.randomUUID().toString();
         //将token写入redis
-        redisTemplate.opsForHash().put(request.getUserName(),Constant.TOKEN,token);
+        redisTemplate.opsForHash().put(request.getPhoneNum(),Constant.TOKEN,token);
         //将token和新密码写入数据库
         userInfo.setPassword(request.getNewpassword());
         userInfo.setToken(token);
@@ -198,18 +195,18 @@ public class UserManageSpi implements UserManage
         return response;
     }
 
-    private void checkUserName(String userName)
+    private void checkUserName(String phoneNum)
     {
-        if(!userName.matches("^[0-9]*$"))
+        if(!phoneNum.matches("^[0-9]*$"))
         {
-            throw new UserManageExiception(ErrorCode.USERNAME_INVALIDED,"userName is not legal");
+            throw new UserManageExiception(ErrorCode.PHONE_NUM_INVALIDED,"phone num is not legal");
         }
 
-        UserInfo userInfo = userInfoServiceSpi.findByUserName(userName);
+        UserInfo userInfo = userInfoServiceSpi.findByPhoneNum(phoneNum);
 
         if(userInfo != null)
         {
-            throw new UserManageExiception(ErrorCode.USERNAME_EXIST,"userName is has alreday exits");
+            throw new UserManageExiception(ErrorCode.PHONE_NUM_EXIST,"phone num has alreday exits");
         }
     }
 

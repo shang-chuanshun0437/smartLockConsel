@@ -5,15 +5,15 @@ public class ErrorCode
     public static String SUCCESS = "000000";
 
     //用户名不合法
-    public static String USERNAME_INVALIDED = "100003";
+    public static String PHONE_NUM_INVALIDED = "100003";
 
     //用户名已存在
-    public static String USERNAME_EXIST = "100004";
+    public static String PHONE_NUM_EXIST = "100004";
 
     public static String DEFAULT_ERROR = "100005";
 
     //用户不存在
-    public static String USERNAME_NOT_EXIST = "100006";
+    public static String USERPHONE_NOT_EXIST = "100006";
 
     //密码错误
     public static String PASSWORD_ERROR = "100007";

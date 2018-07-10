@@ -20,4 +20,7 @@ public class Constant
 
     //子用户
     public static String SUB_USER = "0";
+
+    //验证码
+    public static String VERIFY_CODE = "_verifyCode";
 }

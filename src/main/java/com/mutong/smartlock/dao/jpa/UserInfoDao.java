@@ -7,12 +7,9 @@ import java.util.List;
 
 public interface UserInfoDao extends JpaRepository<UserInfo,String>
 {
-    UserInfo findByUserName(String userName);
+    UserInfo findByPhoneNum(String phoneNum);
 
     @Override
     List<UserInfo> findAll();
 
-    List<UserInfo> findByUserNameLike(String userNam);
-
-    int deleteByUserName(String userName);
 }

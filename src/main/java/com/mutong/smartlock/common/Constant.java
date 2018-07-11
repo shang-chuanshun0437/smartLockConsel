@@ -23,4 +23,7 @@ public class Constant
 
     //验证码
     public static String VERIFY_CODE = "_verifyCode";
+
+    //验证码凭据
+    public static String VERIFY_VOUCHER = "_verifyVoucher";
 }

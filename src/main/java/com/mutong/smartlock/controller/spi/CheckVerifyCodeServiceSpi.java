@@ -3,8 +3,11 @@ package com.mutong.smartlock.controller.spi;
 import com.mutong.smartlock.common.ErrorCode;
 import com.mutong.smartlock.common.LockException;
 import com.mutong.smartlock.common.Result;
+import com.mutong.smartlock.controller.CheckVerifyCodeService;
 import com.mutong.smartlock.controller.GetVerifyCodeService;
+import com.mutong.smartlock.controller.request.CheckVerifyCodeRequest;
 import com.mutong.smartlock.controller.request.GetVerifyCodeRequest;
+import com.mutong.smartlock.controller.response.CheckVerifyCodeResponse;
 import com.mutong.smartlock.controller.response.GetVerifyCodeResponse;
 import com.mutong.smartlock.service.spi.VerifyCodeManagerSpi;
 import org.slf4j.Logger;
@@ -19,26 +22,26 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/v1/verifyCode")
-public class GetVerifyCodeServiceSpi implements GetVerifyCodeService
+public class CheckVerifyCodeServiceSpi implements CheckVerifyCodeService
 {
-    private Logger logger = LoggerFactory.getLogger(GetVerifyCodeServiceSpi.class);
+    private Logger logger = LoggerFactory.getLogger(CheckVerifyCodeServiceSpi.class);
     @Autowired
     private VerifyCodeManagerSpi verifyCodeManagerSpi;
 
-    @RequestMapping(value = "/getVerifyCode",method = RequestMethod.POST)
+    @RequestMapping(value = "/checkVerifyCode",method = RequestMethod.POST)
     @Override
-    public GetVerifyCodeResponse getVerifyCode(@RequestBody @Valid GetVerifyCodeRequest request)
+    public CheckVerifyCodeResponse checkVerifyCode(@RequestBody @Valid CheckVerifyCodeRequest request)
     {
-        if(logger.isDebugEnabled())
+        if (logger.isDebugEnabled())
         {
-            logger.debug("inter getVerifyCode():{}",request.toString());
+            logger.debug("inter checkVerifyCode(),{}",request.toString());
         }
-        GetVerifyCodeResponse response = new GetVerifyCodeResponse();
+        CheckVerifyCodeResponse response = new CheckVerifyCodeResponse();
         Result result = new Result();
         response.setResult(result);
         try
         {
-            response = verifyCodeManagerSpi.getVerifyCode(request);
+            response = verifyCodeManagerSpi.checkVerifyCode(request);
         }
         catch (LockException e)
         {

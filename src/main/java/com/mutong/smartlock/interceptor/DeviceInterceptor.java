@@ -32,7 +32,7 @@ public class DeviceInterceptor
         HttpServletRequest request = attributes.getRequest();
         // 记录下请求内容
         logger.debug("inter DeviceInterceptor,request url:{},remote ip:{},headers:{}",
-                request.getRequestURI(),request.getRemoteAddr());
+                request.getRequestURI(),request.getRemoteAddr(),request.getHeader("phoneNum"));
 
     }
 

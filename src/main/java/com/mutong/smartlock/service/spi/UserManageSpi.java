@@ -30,54 +30,47 @@ public class UserManageSpi implements UserManage
 
     /*
      * 在注册用户时
-     * 1、校验用户名是否为手机号
-     * 2、校验用户名是否已经注册
-     * 3、校验短信验证码
-     * 4、注册成功
+     * 1、校验手机号
+     * 2、校验短信验证码的凭据
+     * 3、注册成功
      * */
     @Override
     public AddUserResponse addUser(AddUserRequest request)
     {
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("inter addUser(),",request.toString());
+        }
+
         AddUserResponse addUserResponse = new AddUserResponse();
 
         Result result = new Result();
         addUserResponse.setResult(result);
 
         String phoneNum = request.getPhoneNum();
-        try
-        {
-            //校验用户名
-            checkUserName(phoneNum);
 
-            //注册时生成token，存入数据库，为永久token，只有在密码修改的时候才会变动
-            String token = UUID.randomUUID().toString();
+        //校验用户名
+        checkUserName(phoneNum);
+        //校验验证码凭据
+        String voucher = redisTemplate.opsForValue().get(request.getPhoneNum() + Constant.VERIFY_VOUCHER);
+        LockAssert.isTrue(request.getVoucher().equals(voucher),ErrorCode.VERIFY_VOUCHER_ERROR,"verify voucher error");
+        //注册时生成token，存入数据库，为永久token，只有在密码修改的时候才会变动
+        String token = UUID.randomUUID().toString();
 
-            //将token存入Redis,采用map方式存储
-            redisTemplate.opsForHash().put(phoneNum ,Constant.TOKEN,token);
+        //将token存入Redis,采用map方式存储
+        redisTemplate.opsForHash().put(phoneNum ,Constant.TOKEN,token);
 
-            //将用户信息存入数据库
-            UserInfo userInfo = new UserInfo();
+        //将用户信息存入数据库
+        UserInfo userInfo = new UserInfo();
 
-            userInfo.setCreateTime(DateUtil.yyyyMMddHHmm());
-            userInfo.setPhoneNum(request.getPhoneNum());
-            userInfo.setUserName(request.getUserName());
-            userInfo.setPassword(request.getPassword());
-            userInfo.setToken(token);
-            userInfo.setTombTime("0");
+        userInfo.setCreateTime(DateUtil.yyyyMMddHHmm());
+        userInfo.setPhoneNum(request.getPhoneNum());
+        userInfo.setUserName(request.getUserName());
+        userInfo.setPassword(request.getPassword());
+        userInfo.setToken(token);
+        userInfo.setTombTime("0");
 
-            userInfoServiceSpi.save(userInfo);
-        }
-        catch (UserManageExiception e)
-        {
-            result.setRetcode(e.getCode());
-            result.setRetmsg(e.getMsg());
-        }
-
-        catch (Exception e)
-        {
-            result.setRetcode(ErrorCode.DEFAULT_ERROR);
-            result.setRetmsg("add user failed");
-        }
+        userInfoServiceSpi.save(userInfo);
 
         return addUserResponse;
     }
@@ -197,17 +190,10 @@ public class UserManageSpi implements UserManage
 
     private void checkUserName(String phoneNum)
     {
-        if(!phoneNum.matches("^[0-9]*$"))
-        {
-            throw new UserManageExiception(ErrorCode.PHONE_NUM_INVALIDED,"phone num is not legal");
-        }
+        LockAssert.isTrue(phoneNum.matches("^[0-9]*$"),ErrorCode.PHONE_NUM_INVALIDED,"phone num is not legal");
 
         UserInfo userInfo = userInfoServiceSpi.findByPhoneNum(phoneNum);
-
-        if(userInfo != null)
-        {
-            throw new UserManageExiception(ErrorCode.PHONE_NUM_EXIST,"phone num has alreday exits");
-        }
+        LockAssert.isTrue(userInfo == null,ErrorCode.PHONE_NUM_EXIST,"phone num has alreday exits");
     }
 
     /*private String getToken()

@@ -21,6 +21,15 @@ public class ErrorCode
     //redis中token为null
     public static String TOKEN_IS_NULL = "100008";
 
+    //redis中验证码为null
+    public static String VERIFY_CODE_NULL = "100012";
+
+    //redis中验证码为不正确
+    public static String VERIFY_CODE_ERROR = "100013";
+
+    //redis中验证码凭据不正确
+    public static String VERIFY_VOUCHER_ERROR = "100014";
+
     //用户未登录
     public static String NOT_LOGIN = "100009";
 

@@ -5,7 +5,7 @@ import javax.validation.constraints.Size;
 
 public class ModifyPwdRequest
 {
-    @NotBlank(message = "user name can not be null")
+    @NotBlank(message = "phoneNum can not be null")
     @Size(min = 11,max = 11)
     private String phoneNum;
 

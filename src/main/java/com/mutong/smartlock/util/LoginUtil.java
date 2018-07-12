@@ -15,7 +15,7 @@ public class LoginUtil
     @Autowired
     private  StringRedisTemplate redisTemplate;
 
-    public  boolean isLogin(String userName,String token)
+    public boolean isLogin(String phoneNum,String token)
     {
         if(StringUtils.isEmpty(token))
         {
@@ -23,7 +23,7 @@ public class LoginUtil
         }
 
         HashOperations<String, String, String> hashOperations= redisTemplate.opsForHash();
-        Map<String,String> resultMap = hashOperations.entries(userName);
+        Map<String,String> resultMap = hashOperations.entries(phoneNum);
 
         String redisToken = resultMap.get("token");
 

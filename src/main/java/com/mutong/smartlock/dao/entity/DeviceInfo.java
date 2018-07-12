@@ -18,7 +18,7 @@ public class DeviceInfo
     @Column(name="bluetooth_mac")
     private String bluetoothMac;
 
-    //设备的所有者，该用户可以操作智能锁的所有功能：添加用户、删除用户
+    //手机号,设备的所有者，该用户可以操作智能锁的所有功能：添加用户、删除用户
     @Column(name = "user_name")
     private String userName;
 

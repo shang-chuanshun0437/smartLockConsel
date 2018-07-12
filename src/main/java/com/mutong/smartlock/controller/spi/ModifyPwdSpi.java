@@ -45,6 +45,7 @@ public class ModifyPwdSpi implements ModifyPwdService
             result.setRetmsg(e.getMsg());
 
             response.setResult(result);
+            logger.error("modifyPwd failed,{}",e.getMsg());
         }
         return response;
     }

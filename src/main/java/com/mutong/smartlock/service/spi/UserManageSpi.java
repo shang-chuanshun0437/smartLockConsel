@@ -95,23 +95,10 @@ public class UserManageSpi implements UserManage
         //校验用户和密码
         String password = request.getPassword();
         String phoneNum = request.getPhoneNum();
-        String terminalId = request.getTerminalId();
 
         UserInfo dbUserInfo = userInfoServiceSpi.findByPhoneNum(phoneNum);
-        if(dbUserInfo == null)
-        {
-            result.setRetcode(ErrorCode.USERPHONE_NOT_EXIST);
-            result.setRetmsg("user phone not exist in mysql!");
-            logger.error("user phone not exist in mysql!user name :{}",phoneNum);
-            return response;
-        }
-        else if(!password.equals(dbUserInfo.getPassword()))
-        {
-            result.setRetcode(ErrorCode.PASSWORD_ERROR);
-            result.setRetmsg("password is not right.");
-            logger.error("password is not right.!user phone :{}",phoneNum);
-            return response;
-        }
+        LockAssert.isTrue(dbUserInfo != null,ErrorCode.USERPHONE_NOT_EXIST,"user phone not exist in mysql!");
+        LockAssert.isTrue(password.equals(dbUserInfo.getPassword()),ErrorCode.PASSWORD_ERROR,"password is not right.");
 
         //若数据库中token为空，则生成新的token
         String token = dbUserInfo.getToken();
@@ -122,31 +109,14 @@ public class UserManageSpi implements UserManage
             userInfoServiceSpi.save(dbUserInfo);
             redisTemplate.opsForHash().put(phoneNum,Constant.TOKEN,token);
         }
-        //获取上一次登录记录:手机ID、登录时间
-        Map<Object,Object> resultMap= redisTemplate.opsForHash().entries(phoneNum);
-        String lastTerminalId = (String)resultMap.get(Constant.LAST_TERMINALID);
-        String lastTime = (String)resultMap.get(Constant.LAST_TIME);
-        if(!StringUtils.isEmpty(lastTerminalId) || !StringUtils.isEmpty(lastTime))
-        {
-            NamedParmeter[] namedParmeters = new NamedParmeter[2];
-			
-			namedParmeters[0] = new NamedParmeter();
-            namedParmeters[0].setKey(Constant.LAST_TERMINALID);
-            namedParmeters[0].setValue(lastTerminalId);
-			
-			namedParmeters[1] = new NamedParmeter();
-            namedParmeters[1].setKey(Constant.LAST_TIME);
-            namedParmeters[1].setValue(lastTime);
-
-            result.setExtendsInfo(namedParmeters);
-        }
-        //设置本次登录的时间和手机id
-        redisTemplate.opsForHash().put(phoneNum,Constant.LAST_TERMINALID,request.getTerminalId());
-        redisTemplate.opsForHash().put(phoneNum,Constant.LAST_TIME,DateUtil.yyyyMMddHHmmss());
 
         response.setToken(token);
+        response.setUserName(dbUserInfo.getUserName());
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("exit login(),login success,user name:{}",request.getPhoneNum());
+        }
 
-        logger.debug("exit login(),login success,user name:{}",request.getPhoneNum());
         return response;
     }
 

@@ -37,13 +37,13 @@ public class BindDeviceServiceSpi implements BindDeviceService
     @Override
     public BindDeviceResponse bindDevice(@RequestBody @Valid BindDeviceRequest request)
     {
-        logger.debug("inter bindDevice(),user name:{},deviceNmae:{}",request.getUserName(),request.getDeviceName());
+        logger.debug("inter bindDevice(),",request.toString());
         BindDeviceResponse response = new BindDeviceResponse();
 
         try
         {
             //校验用户是否登录
-            LockAssert.isTrue(loginUtil.isLogin(request.getUserName(),request.getToken()),ErrorCode.NOT_LOGIN,"user not login");
+            LockAssert.isTrue(loginUtil.isLogin(request.getPhoneNum(),request.getToken()),ErrorCode.NOT_LOGIN,"user not login");
 
             BindDeviceResponse userAttachedDeviceResponse = userAttachedDeviceManager.bindDevice(request);
             response = userAttachedDeviceResponse;
@@ -53,7 +53,7 @@ public class BindDeviceServiceSpi implements BindDeviceService
             Result result = new Result();
             result.setRetcode(e.getMessage());
             response.setResult(result);
-            logger.error("bind device error,user name:{},token:{},error msg:{}",request.getUserName(),request.getToken(),e.toString());
+            logger.error("bind device error,{}",e.getMsg());
         }
 
         return response;

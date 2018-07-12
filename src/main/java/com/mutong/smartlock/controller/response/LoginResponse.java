@@ -8,6 +8,8 @@ public class LoginResponse
 
     private String token;
 
+    private String userName;
+
     private String refreshToken;
 
     public Result getResult() {
@@ -32,5 +34,13 @@ public class LoginResponse
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

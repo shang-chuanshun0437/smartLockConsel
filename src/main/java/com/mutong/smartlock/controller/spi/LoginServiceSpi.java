@@ -1,5 +1,8 @@
 package com.mutong.smartlock.controller.spi;
 
+import com.mutong.smartlock.common.ErrorCode;
+import com.mutong.smartlock.common.LockException;
+import com.mutong.smartlock.common.Result;
 import com.mutong.smartlock.controller.LoginService;
 import com.mutong.smartlock.controller.request.LoginRequest;
 import com.mutong.smartlock.controller.response.LoginResponse;
@@ -27,6 +30,27 @@ public class LoginServiceSpi implements LoginService
     @Override
     public LoginResponse login(@RequestBody @Valid LoginRequest request)
     {
-        return userManage.login(request);
+        LoginResponse response = new LoginResponse();
+        Result result = new Result();
+        response.setResult(result);
+
+        try
+        {
+            response = userManage.login(request);
+        }
+        catch (LockException e)
+        {
+            result.setRetcode(e.getCode());
+            result.setRetmsg(e.getMsg());
+            logger.error(e.getMsg());
+        }
+        catch (Exception e)
+        {
+            result.setRetcode(ErrorCode.DEFAULT_ERROR);
+            result.setRetmsg(e.getMessage());
+            logger.error(e.getMessage());
+        }
+
+        return response;
     }
 }

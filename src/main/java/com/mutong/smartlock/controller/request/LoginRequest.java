@@ -10,7 +10,7 @@ public class LoginRequest
     private String phoneNum;
 
     @NotBlank(message = "user password can not be null")
-    @Size(min = 6,max = 12)
+    @Size(min = 8,max = 48)
     private String password;
 
     private String terminalId;
@@ -38,5 +38,14 @@ public class LoginRequest
 
     public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
+    }
+
+    @Override
+    public String toString() {
+        return "LoginRequest{" +
+                "phoneNum='" + phoneNum + '\'' +
+                ", password='" + password + '\'' +
+                ", terminalId='" + terminalId + '\'' +
+                '}';
     }
 }

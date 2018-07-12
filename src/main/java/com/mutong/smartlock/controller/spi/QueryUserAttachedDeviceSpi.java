@@ -1,6 +1,8 @@
 package com.mutong.smartlock.controller.spi;
 
 import com.mutong.smartlock.common.ErrorCode;
+import com.mutong.smartlock.common.LockAssert;
+import com.mutong.smartlock.common.LockException;
 import com.mutong.smartlock.common.Result;
 import com.mutong.smartlock.controller.QueryUserAttachedDeviceService;
 import com.mutong.smartlock.controller.request.QueryUserAttachedDeviceRequest;
@@ -35,31 +37,35 @@ public class QueryUserAttachedDeviceSpi implements QueryUserAttachedDeviceServic
     {
         if( logger.isDebugEnabled() )
         {
-            logger.debug("inter queryUserDevices(),user name:{}",request.getUserName());
+            logger.debug("inter queryUserDevices(),user name:{}",request.getPhoneNum());
         }
 
         QueryUserAttachedDeviceRespose respose = new QueryUserAttachedDeviceRespose();
         Result result = new Result();
-        result.setRetmsg("sucess");
-        result.setRetcode(ErrorCode.SUCCESS);
-
         respose.setResult(result);
 
-        boolean isLogin = loginUtil.isLogin(request.getUserName(),request.getToken());
-
-        if(!isLogin)
+        try
         {
-            result.setRetcode(ErrorCode.NOT_LOGIN);
-            result.setRetmsg("user not login");
-            return respose;
+            boolean isLogin = loginUtil.isLogin(request.getPhoneNum(),request.getToken());
+            LockAssert.isTrue(isLogin,ErrorCode.NOT_LOGIN,"user not login");
+            //去数据库查询
+            respose = userAttachedDeviceManager.queryUserAttachedDevice(request);
         }
-
-        //去数据库查询
-        respose = userAttachedDeviceManager.queryUserAttachedDevice(request);
+        catch (LockException e)
+        {
+            result.setRetcode(e.getCode());
+            result.setRetmsg(e.getMsg());
+            logger.error("queryUserDevices failed,",e.getMsg());
+        }
+        catch (Exception e)
+        {
+            result.setRetcode(ErrorCode.DEFAULT_ERROR);
+            logger.error("queryUserDevices failed exception:",e.getMessage());
+        }
 
         if( logger.isDebugEnabled() )
         {
-            logger.debug("exit queryUserDevices(),user name:{}",request.getUserName());
+            logger.debug("exit queryUserDevices(),user name:{}",request.getPhoneNum());
         }
         return respose;
     }

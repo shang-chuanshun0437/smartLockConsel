@@ -7,8 +7,8 @@ public class BindDeviceRequest
 {
     @NotBlank(message = "user name can not be null")
     @Size(min = 11,max = 11)
-    //待绑定的用户名
-    private String userName;
+    //待绑定的手机号
+    private String phoneNum;
 
     private String token;
 
@@ -19,14 +19,6 @@ public class BindDeviceRequest
 
     //设备名称
     private String deviceName;
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 
     public String getDeviceNum() {
         return deviceNum;
@@ -52,10 +44,19 @@ public class BindDeviceRequest
         this.token = token;
     }
 
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
     @Override
     public String toString() {
-        return "UserBindDeviceRequest{" +
-                "userName='" + userName + '\'' +
+        return "BindDeviceRequest{" +
+                "phoneNum='" + phoneNum + '\'' +
+                ", token='" + token + '\'' +
                 ", deviceNum='" + deviceNum + '\'' +
                 ", deviceName='" + deviceName + '\'' +
                 '}';

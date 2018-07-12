@@ -39,14 +39,14 @@ public class QueryOpenDoorHistorySpi implements QueryOpenDoorHistoryService
     {
         if( logger.isDebugEnabled() )
         {
-            logger.debug("inter queryOpenDoorHistory(),user name:{}",request.getUserName());
+            logger.debug("inter queryOpenDoorHistory(),{}",request.toString());
         }
 
         QueryOpenDoorHistoryResp respose = new QueryOpenDoorHistoryResp();
         Result result = new Result();
         respose.setResult(result);
 
-        boolean isLogin = loginUtil.isLogin(request.getUserName(),request.getToken());
+        boolean isLogin = loginUtil.isLogin(request.getPhoneNum(),request.getToken());
 
         if(!isLogin)
         {

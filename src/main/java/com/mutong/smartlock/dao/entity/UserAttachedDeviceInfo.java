@@ -12,6 +12,7 @@ public class UserAttachedDeviceInfo
     @Column(name = "id")
     private Integer id;
 
+    //此处的用户名就是手机号
     @Column(name = "user_name")
     private String userName;
 

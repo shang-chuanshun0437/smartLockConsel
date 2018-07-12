@@ -23,7 +23,7 @@ import javax.validation.Valid;
 @RequestMapping("/v1/user")
 public class ModifyPwdSpi implements ModifyPwdService
 {
-    private Logger logger = LoggerFactory.getLogger(AddUserServiceSpi.class);
+    private Logger logger = LoggerFactory.getLogger(ModifyPwdSpi.class);
 
     @Autowired
     private UserManageSpi userManage;

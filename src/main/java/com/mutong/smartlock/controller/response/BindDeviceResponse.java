@@ -6,9 +6,11 @@ public class BindDeviceResponse
 {
     private Result result;
 
-    private String bloothMac;
+    private String bluetoothMac;
 
     private String attachedTime;
+
+    private String deviceVersion;
 
     public Result getResult() {
         return result;
@@ -16,14 +18,6 @@ public class BindDeviceResponse
 
     public void setResult(Result result) {
         this.result = result;
-    }
-
-    public String getBloothMac() {
-        return bloothMac;
-    }
-
-    public void setBloothMac(String bloothMac) {
-        this.bloothMac = bloothMac;
     }
 
     public String getAttachedTime() {
@@ -34,4 +28,19 @@ public class BindDeviceResponse
         this.attachedTime = attachedTime;
     }
 
+    public String getBluetoothMac() {
+        return bluetoothMac;
+    }
+
+    public void setBluetoothMac(String bluetoothMac) {
+        this.bluetoothMac = bluetoothMac;
+    }
+
+    public String getDeviceVersion() {
+        return deviceVersion;
+    }
+
+    public void setDeviceVersion(String deviceVersion) {
+        this.deviceVersion = deviceVersion;
+    }
 }

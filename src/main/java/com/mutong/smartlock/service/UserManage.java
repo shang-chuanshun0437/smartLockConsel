@@ -11,4 +11,6 @@ public interface UserManage
 
     ModifyPwdResponse modifyPwd(ModifyPwdRequest request);
 
+    ModifyUserNameResponse modifyUserName(String phoneNum,String newName);
+
 }

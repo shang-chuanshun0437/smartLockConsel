@@ -78,7 +78,16 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
 
         userAttachedDevice.save(dbUserAttachedDeviceInfo);
 
-        response.setBloothMac(dbDeviceInfo.getBluetoothMac());
+        //修改user_device表中所有关联该设备的设备名称
+        List<UserAttachedDeviceInfo> list = userAttachedDevice.findByDeviceNum(request.getPhoneNum());
+        for (UserAttachedDeviceInfo userAttachedDeviceInfo : list)
+        {
+            userAttachedDeviceInfo.setDeviceName(request.getDeviceName());
+            userAttachedDevice.save(userAttachedDeviceInfo);
+        }
+        
+        response.setBluetoothMac(dbDeviceInfo.getBluetoothMac());
+        response.setDeviceVersion(dbDeviceInfo.getVersion());
         response.setAttachedTime(dbUserAttachedDeviceInfo.getAssociateTime());
 
         if (logger.isDebugEnabled())
@@ -90,8 +99,8 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
     }
 
     /*查询用户绑定的设备
-    *1、自己名下的设备
-    * 2、自己管理的设备
+    *1、自己是普通用户
+    * 2、自己是管理员
     **/
     @Override
     public QueryUserAttachedDeviceRespose queryUserAttachedDevice(QueryUserAttachedDeviceRequest request)

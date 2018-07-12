@@ -158,6 +158,22 @@ public class UserManageSpi implements UserManage
         return response;
     }
 
+    @Override
+    public ModifyUserNameResponse modifyUserName(String phoneNum,String newName)
+    {
+        ModifyUserNameResponse response = new ModifyUserNameResponse();
+        Result result = new Result();
+        response.setResult(result);
+
+        UserInfo dbUserInfo = userInfoServiceSpi.findByPhoneNum(phoneNum);
+        LockAssert.isTrue(dbUserInfo != null,ErrorCode.USERPHONE_NOT_EXIST,"user not exist.");
+
+        dbUserInfo.setUserName(newName);
+
+        userInfoServiceSpi.save(dbUserInfo);
+        return response;
+    }
+
     private void checkUserName(String phoneNum)
     {
         LockAssert.isTrue(phoneNum.matches("^[0-9]*$"),ErrorCode.PHONE_NUM_INVALIDED,"phone num is not legal");

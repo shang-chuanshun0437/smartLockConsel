@@ -15,11 +15,11 @@ public class Constant
     //上一次登录的时间
     public static String LAST_TIME = "lastTime";
 
-    //主用户
+    //管理员
     public static String MAIN_USER = "0";
 
-    //子用户
-    public static String SUB_USER = "0";
+    //普通用户
+    public static String SUB_USER = "1";
 
     //验证码
     public static String VERIFY_CODE = "_verifyCode";

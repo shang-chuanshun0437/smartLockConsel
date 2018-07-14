@@ -12,9 +12,11 @@ public class UserAttachedDeviceInfo
     @Column(name = "id")
     private Integer id;
 
-    //此处的用户名就是手机号
-    @Column(name = "user_name")
-    private String userName;
+    /*@Column(name = "user_name")
+    private String userName;*/
+
+    @Column(name = "phone_num")
+    private String phoneNum;
 
     @Column(name = "device_num")
     private String deviceNum;
@@ -41,13 +43,17 @@ public class UserAttachedDeviceInfo
     @Column(name = "version")
     private String version;
 
-    public String getUserName() {
+    //钥匙有效期,为空则表示永久有效
+    @Column(name = "valid_date")
+    private String validDate;
+
+    /*public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
+    }*/
 
     public String getDeviceNum() {
         return deviceNum;
@@ -111,5 +117,21 @@ public class UserAttachedDeviceInfo
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getValidDate() {
+        return validDate;
+    }
+
+    public void setValidDate(String validDate) {
+        this.validDate = validDate;
+    }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
     }
 }

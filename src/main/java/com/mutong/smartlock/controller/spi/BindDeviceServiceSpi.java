@@ -55,7 +55,7 @@ public class BindDeviceServiceSpi implements BindDeviceService
         }
         catch (LockException e)
         {
-            result.setRetcode(e.getMessage());
+            result.setRetcode(e.getCode());
             result.setRetmsg(e.getMsg());
             logger.error("bind device failed,{}",e.getMsg());
         }

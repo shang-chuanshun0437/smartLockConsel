@@ -12,7 +12,7 @@ public class UserAttachedDevice
     private String deviceName;
 
     //智能锁蓝牙mac
-    private String bloothMac;
+    private String bluetoothMac;
 
     //智能锁版本号
     private String version;
@@ -21,6 +21,9 @@ public class UserAttachedDevice
 
     //绑定设备的时间
     private String associateTime;
+
+    //钥匙的有效期
+    private String validDate;
 
     public String getUserName() {
         return userName;
@@ -54,12 +57,12 @@ public class UserAttachedDevice
         this.deviceName = deviceName;
     }
 
-    public String getBloothMac() {
-        return bloothMac;
+    public String getBluetoothMac() {
+        return bluetoothMac;
     }
 
-    public void setBloothMac(String bloothMac) {
-        this.bloothMac = bloothMac;
+    public void setBluetoothMac(String bluetoothMac) {
+        this.bluetoothMac = bluetoothMac;
     }
 
     public String getVersion() {
@@ -84,5 +87,13 @@ public class UserAttachedDevice
 
     public void setAssociateTime(String associateTime) {
         this.associateTime = associateTime;
+    }
+
+    public String getValidDate() {
+        return validDate;
+    }
+
+    public void setValidDate(String validDate) {
+        this.validDate = validDate;
     }
 }

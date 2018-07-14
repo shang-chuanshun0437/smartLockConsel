@@ -1,8 +1,10 @@
 package com.mutong.smartlock.service.spi;
 
 import com.mutong.smartlock.common.*;
+import com.mutong.smartlock.controller.request.BindDevice4UserRequest;
 import com.mutong.smartlock.controller.request.BindDeviceRequest;
 import com.mutong.smartlock.controller.request.QueryUserAttachedDeviceRequest;
+import com.mutong.smartlock.controller.response.BindDevice4UserResponse;
 import com.mutong.smartlock.controller.response.BindDeviceResponse;
 import com.mutong.smartlock.controller.response.QueryUserAttachedDeviceRespose;
 import com.mutong.smartlock.dao.entity.DeviceInfo;
@@ -35,7 +37,10 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
     @Transactional
     public BindDeviceResponse bindDevice(BindDeviceRequest request)
     {
-        logger.debug("inter bindDevice(),device name:{}",request.toString());
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("inter bindDevice(),device name:{}",request.toString());
+        }
 
         BindDeviceResponse response = new BindDeviceResponse();
         Result result = new Result();
@@ -66,15 +71,21 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
         if (dbUserAttachedDeviceInfo == null)
         {
             dbUserAttachedDeviceInfo = new UserAttachedDeviceInfo();
+
+            dbUserAttachedDeviceInfo.setDeviceNum(request.getDeviceNum());
+            dbUserAttachedDeviceInfo.setPhoneNum(request.getPhoneNum());
+            dbUserAttachedDeviceInfo.setUserName(request.getPhoneNum());
+            dbUserAttachedDeviceInfo.setUserType(Constant.MAIN_USER);
+            dbUserAttachedDeviceInfo.setAssociateTime(DateUtil.yyyyMMddHHmm());
+            dbUserAttachedDeviceInfo.setDeviceName(request.getDeviceName());
+            dbUserAttachedDeviceInfo.setDeviceMac(dbDeviceInfo.getBluetoothMac());
+            dbUserAttachedDeviceInfo.setVersion(dbDeviceInfo.getVersion());
+            dbUserAttachedDeviceInfo.setMainUser(dbDeviceInfo.getUserName());
         }
-        dbUserAttachedDeviceInfo.setDeviceNum(request.getDeviceNum());
-        dbUserAttachedDeviceInfo.setUserName(request.getPhoneNum());
-        dbUserAttachedDeviceInfo.setUserType(Constant.MAIN_USER);
-        dbUserAttachedDeviceInfo.setAssociateTime(DateUtil.yyyyMMddHHmm());
-        dbUserAttachedDeviceInfo.setDeviceName(request.getDeviceName());
-        dbUserAttachedDeviceInfo.setDeviceMac(dbDeviceInfo.getBluetoothMac());
-        dbUserAttachedDeviceInfo.setVersion(dbDeviceInfo.getVersion());
-        dbUserAttachedDeviceInfo.setMainUser(dbDeviceInfo.getUserName());
+        else
+        {
+            dbUserAttachedDeviceInfo.setDeviceName(request.getDeviceName());
+        }
 
         userAttachedDevice.save(dbUserAttachedDeviceInfo);
 
@@ -131,19 +142,73 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
 
                 userAttachedDevices[i].setUserName(userAttachedDeviceInfo.getUserName());
                 userAttachedDevices[i].setMainName(userAttachedDeviceInfo.getMainUser());
-                userAttachedDevices[i].setBloothMac(userAttachedDeviceInfo.getDeviceMac());
+                userAttachedDevices[i].setBluetoothMac(userAttachedDeviceInfo.getDeviceMac());
                 userAttachedDevices[i].setDeviceName(userAttachedDeviceInfo.getDeviceName());
                 userAttachedDevices[i].setDeviceNum(userAttachedDeviceInfo.getDeviceNum());
                 userAttachedDevices[i].setUserType(userAttachedDeviceInfo.getUserType());
                 userAttachedDevices[i].setVersion(userAttachedDeviceInfo.getVersion());
                 userAttachedDevices[i].setAssociateTime(userAttachedDeviceInfo.getAssociateTime());
+                userAttachedDevices[i].setValidDate(userAttachedDeviceInfo.getValidDate());
             }
 
             respose.setUserAttachedDevices(userAttachedDevices);
         }
 
-        logger.debug("exit queryUserAttachedDevice(),user name:{}",request.getPhoneNum());
+        if(logger.isDebugEnabled())
+        {
+            logger.debug("exit queryUserAttachedDevice(),numbers:{}",userAttachedDeviceInfos.size());
+        }
 
         return  respose;
+    }
+
+    @Override
+    public BindDevice4UserResponse bindDevice4User(DeviceInfo deviceInfo,String bindPhoneNum,String validDate)
+    {
+        BindDevice4UserResponse response = new BindDevice4UserResponse();
+        Result result = new Result();
+        response.setResult(result);
+
+        //user_device是否存在绑定关系
+        UserAttachedDeviceInfo userAttachedDeviceInfo = userAttachedDevice.findByDeviceNumAndUserName(deviceInfo.getDeviceNum(),bindPhoneNum);
+
+
+        if(userAttachedDeviceInfo == null)
+        {
+            userAttachedDeviceInfo = new UserAttachedDeviceInfo();
+
+            userAttachedDeviceInfo.setAssociateTime(DateUtil.yyyyMMddHHmm());
+            userAttachedDeviceInfo.setDeviceName(deviceInfo.getDeviceName());
+            userAttachedDeviceInfo.setDeviceMac(deviceInfo.getBluetoothMac());
+            userAttachedDeviceInfo.setDeviceNum(deviceInfo.getDeviceNum());
+            userAttachedDeviceInfo.setMainUser(deviceInfo.getUserName());
+            userAttachedDeviceInfo.setVersion(deviceInfo.getVersion());
+            userAttachedDeviceInfo.setValidDate(validDate);
+            userAttachedDeviceInfo.setUserName(bindPhoneNum);
+            userAttachedDeviceInfo.setUserType(Constant.SUB_USER);
+        }
+        else
+        {
+            userAttachedDeviceInfo.setValidDate(validDate);
+        }
+
+        //将数据存入user_device
+        userAttachedDevice.save(userAttachedDeviceInfo);
+
+        UserAttachedDevice userAttachedDevice = new UserAttachedDevice();
+
+        userAttachedDevice.setValidDate(userAttachedDeviceInfo.getValidDate());
+        userAttachedDevice.setAssociateTime(userAttachedDeviceInfo.getAssociateTime());
+        userAttachedDevice.setBluetoothMac(userAttachedDeviceInfo.getDeviceMac());
+        userAttachedDevice.setDeviceName(userAttachedDeviceInfo.getDeviceName());
+        userAttachedDevice.setVersion(userAttachedDeviceInfo.getVersion());
+        userAttachedDevice.setDeviceNum(userAttachedDeviceInfo.getDeviceNum());
+        userAttachedDevice.setMainName(userAttachedDeviceInfo.getMainUser());
+        userAttachedDevice.setUserName(userAttachedDeviceInfo.getUserName());
+        userAttachedDevice.setUserType(userAttachedDeviceInfo.getUserType());
+
+        response.setUserAttachedDevice(userAttachedDevice);
+
+        return response;
     }
 }

@@ -65,14 +65,14 @@ public class BindDevice4UserServiceSpi implements BindDevice4UserService
 
             //校验用户是否为该设备的管理员
             DeviceInfo deviceInfo = deviceInfoService.findByDeviceNum(request.getDeviceNum());
-            LockAssert.isTrue(deviceInfo != null && deviceInfo.getUserName().equals(request.getPhoneNum()),
+            LockAssert.isTrue(deviceInfo != null && deviceInfo.getPhoneNum().equals(request.getPhoneNum()),
                     ErrorCode.DeviceErrorCode.MAIN_USER_MISSMATCH,"main user mismatch.");
 
             //校验待绑定的用户是否已注册
-            UserInfo userInfo = userInfoService.findByPhoneNum(request.getBindPhoneNum());
-            LockAssert.isTrue(userInfo != null,ErrorCode.USERPHONE_NOT_EXIST,"user not exist.");
+            UserInfo bindUserInfo = userInfoService.findByPhoneNum(request.getBindPhoneNum());
+            LockAssert.isTrue(bindUserInfo != null,ErrorCode.USERPHONE_NOT_EXIST,"user not exist.");
 
-            response = userAttachedDeviceManager.bindDevice4User(deviceInfo,request.getBindPhoneNum(),request.getValidDate());
+            response = userAttachedDeviceManager.bindDevice4User(deviceInfo,bindUserInfo,request.getValidDate());
         }
         catch (LockException e)
         {

@@ -55,7 +55,7 @@ public class ModifyDeviceNameSpi implements ModifyDeviceNameService
             //校验是否为该设备的管理员
             GetDeviceInfoResponse deviceInfoResponse = deviceManager.findDeviceByNum(request.getDeviceNum());
             LockAssert.isTrue(deviceInfoResponse.getDeviceInfo() != null,ErrorCode.DeviceErrorCode.DEVICE_NOT_EXIT,"device not exist");
-            LockAssert.isTrue(deviceInfoResponse.getDeviceInfo().getUserName().equals(request.getPhoneNum()),
+            LockAssert.isTrue(deviceInfoResponse.getDeviceInfo().getPhoneNum().equals(request.getPhoneNum()),
                     ErrorCode.DeviceErrorCode.MAIN_USER_MISSMATCH,"user is not the main user of device");
 
             //修改设备名称

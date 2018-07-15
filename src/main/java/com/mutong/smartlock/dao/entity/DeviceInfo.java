@@ -19,8 +19,8 @@ public class DeviceInfo
     private String bluetoothMac;
 
     //手机号,设备的所有者，该用户可以操作智能锁的所有功能：添加用户、删除用户
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "phone_num")
+    private String phoneNum;
 
     //创建设备的时间,格式为：yyyyMMddHHmm
     @Column(name = "create_time")
@@ -50,30 +50,12 @@ public class DeviceInfo
         this.bluetoothMac = bluetoothMac;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public String getCreateTime() {
         return createTime;
     }
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
-    }
-
-    @Override
-    public String toString() {
-        return "DeviceInfo{" +
-                "deviceNum=" + deviceNum +
-                ", bluetoothMac='" + bluetoothMac + '\'' +
-                ", userName='" + userName + '\'' +
-                ", deviceTime='" + createTime + '\'' +
-                '}';
     }
 
     public String getDeviceName() {
@@ -91,4 +73,13 @@ public class DeviceInfo
     public void setVersion(String version) {
         this.version = version;
     }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
 }

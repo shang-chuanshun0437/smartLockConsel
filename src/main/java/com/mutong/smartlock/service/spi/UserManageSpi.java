@@ -3,6 +3,7 @@ package com.mutong.smartlock.service.spi;
 import com.mutong.smartlock.common.*;
 import com.mutong.smartlock.controller.request.*;
 import com.mutong.smartlock.controller.response.*;
+import com.mutong.smartlock.dao.entity.UserAttachedDeviceInfo;
 import com.mutong.smartlock.dao.entity.UserInfo;
 import com.mutong.smartlock.service.UserManage;
 import com.mutong.smartlock.service.exception.UserManageExiception;
@@ -12,8 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,6 +30,9 @@ public class UserManageSpi implements UserManage
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private UserAttachedDeviceSpi userAttachedDevice;
 
     /*
      * 在注册用户时
@@ -158,6 +164,7 @@ public class UserManageSpi implements UserManage
         return response;
     }
 
+    @Transactional
     @Override
     public ModifyUserNameResponse modifyUserName(String phoneNum,String newName)
     {
@@ -165,12 +172,25 @@ public class UserManageSpi implements UserManage
         Result result = new Result();
         response.setResult(result);
 
+        //修改user_info表
         UserInfo dbUserInfo = userInfoServiceSpi.findByPhoneNum(phoneNum);
         LockAssert.isTrue(dbUserInfo != null,ErrorCode.USERPHONE_NOT_EXIST,"user not exist.");
 
         dbUserInfo.setUserName(newName);
 
         userInfoServiceSpi.save(dbUserInfo);
+
+        //修改user_device表
+        List<UserAttachedDeviceInfo> userAttachedDeviceInfos = userAttachedDevice.findByPhoneNum(phoneNum);
+        if (userAttachedDeviceInfos != null)
+        {
+            for (UserAttachedDeviceInfo userAttachedDeviceInfo : userAttachedDeviceInfos)
+            {
+                userAttachedDeviceInfo.setUserName(newName);
+                userAttachedDevice.save(userAttachedDeviceInfo);
+            }
+        }
+
         return response;
     }
 

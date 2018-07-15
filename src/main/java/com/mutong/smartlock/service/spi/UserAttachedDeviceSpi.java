@@ -15,9 +15,9 @@ public class UserAttachedDeviceSpi implements UserAttachedDeviceService
     private UserAttachedDeviceDao userAttachedDevice;
 
     @Override
-    public List<UserAttachedDeviceInfo> findByUserName(String userName)
+    public List<UserAttachedDeviceInfo> findByPhoneNum(String phoneNum)
     {
-        return userAttachedDevice.findByUserName(userName);
+        return userAttachedDevice.findByPhoneNum(phoneNum);
     }
 
     @Override
@@ -27,9 +27,9 @@ public class UserAttachedDeviceSpi implements UserAttachedDeviceService
     }
 
     @Override
-    public UserAttachedDeviceInfo findByDeviceNumAndUserName(String deviceNum,String userName)
+    public UserAttachedDeviceInfo findByDeviceNumAndPhoneNum(String deviceNum,String phoneNum)
     {
-        return userAttachedDevice.findByDeviceNumAndUserName(deviceNum,userName);
+        return userAttachedDevice.findByDeviceNumAndPhoneNum(deviceNum,phoneNum);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class UserAttachedDeviceSpi implements UserAttachedDeviceService
     }
 
     @Override
-    public List<UserAttachedDeviceInfo> findByUserNameOrMainUser(String userName,String mainUser) {
-        return userAttachedDevice.findByUserNameOrMainUser(userName,mainUser);
+    public List<UserAttachedDeviceInfo> findByPhoneNumOrMainUser(String phoneNum,String mainUser) {
+        return userAttachedDevice.findByPhoneNumOrMainUser(phoneNum,mainUser);
     }
 }

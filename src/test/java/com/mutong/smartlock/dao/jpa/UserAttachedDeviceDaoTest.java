@@ -20,6 +20,6 @@ public class UserAttachedDeviceDaoTest {
     @Test
     public void findByUserNameOrMainUser()
     {
-        List<UserAttachedDeviceInfo> userAttachedDeviceInfos = userAttachedDeviceDao.findByUserNameOrMainUser("18753137390","");
+        List<UserAttachedDeviceInfo> userAttachedDeviceInfos = userAttachedDeviceDao.findByPhoneNumOrMainUser("18753137390","");
     }
 }

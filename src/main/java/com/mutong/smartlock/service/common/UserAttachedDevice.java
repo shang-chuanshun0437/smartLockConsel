@@ -4,6 +4,7 @@ public class UserAttachedDevice
 {
     private String userName;
 
+    private String phoneNum;
     //管理员
     private String mainName;
 
@@ -95,5 +96,13 @@ public class UserAttachedDevice
 
     public void setValidDate(String validDate) {
         this.validDate = validDate;
+    }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
     }
 }

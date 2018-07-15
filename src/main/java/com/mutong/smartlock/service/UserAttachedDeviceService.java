@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface UserAttachedDeviceService
 {
-    List<UserAttachedDeviceInfo> findByUserName(String userName);
+    List<UserAttachedDeviceInfo> findByPhoneNum(String phoneNum);
 
     List<UserAttachedDeviceInfo> findByDeviceNum(String deviceNum);
 
-    UserAttachedDeviceInfo findByDeviceNumAndUserName(String deviceNum,String userName);
+    UserAttachedDeviceInfo findByDeviceNumAndPhoneNum(String deviceNum,String phoneNum);
 
     UserAttachedDeviceInfo save(UserAttachedDeviceInfo userAttachedDeviceInfo);
 
-    List<UserAttachedDeviceInfo> findByUserNameOrMainUser(String userName,String mainUser);
+    List<UserAttachedDeviceInfo> findByPhoneNumOrMainUser(String phoneNum,String mainUser);
 }

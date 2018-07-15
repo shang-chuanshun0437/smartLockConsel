@@ -20,7 +20,7 @@ public class DeviceInfoDaoTest {
         deviceInfo.setBluetoothMac("ee:erqq");
         deviceInfo.setDeviceNum("ff");
         deviceInfo.setCreateTime("20180530");
-        deviceInfo.setUserName("rrfftyeeff");
+        deviceInfo.setPhoneNum("rrfftyeeff");
 
         deviceInfoDao.save(deviceInfo);
     }

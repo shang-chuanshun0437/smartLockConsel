@@ -9,6 +9,7 @@ import com.mutong.smartlock.controller.response.BindDeviceResponse;
 import com.mutong.smartlock.controller.response.QueryUserAttachedDeviceRespose;
 import com.mutong.smartlock.dao.entity.DeviceInfo;
 import com.mutong.smartlock.dao.entity.UserAttachedDeviceInfo;
+import com.mutong.smartlock.dao.entity.UserInfo;
 import com.mutong.smartlock.service.UserAttachedDeviceManagerService;
 import com.mutong.smartlock.service.common.UserAttachedDevice;
 import com.mutong.smartlock.util.DateUtil;
@@ -31,6 +32,9 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
 
     @Autowired
     private UserAttachedDeviceSpi userAttachedDevice;
+
+    @Autowired
+    private UserInfoServiceSpi userInfoService;
 
     //自己为自己绑定设备：该设备下没有任何用户或者自己为该设备的主用户，绑定成功
     @Override
@@ -55,32 +59,35 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
         LockAssert.isTrue(dbDeviceInfo != null,ErrorCode.DeviceErrorCode.DEVICE_NOT_EXIT,"device not exit in mysql");
 
         //判断设备的主用户非空，且主用户不等于请求中传过来的用户名
-        String mainUser = dbDeviceInfo.getUserName();
+        String mainUser = dbDeviceInfo.getPhoneNum();
         if(!StringUtils.isEmpty(mainUser) && !request.getPhoneNum().equals(mainUser))
         {
             throw new LockException(ErrorCode.DeviceErrorCode.MAIN_USER_MISSMATCH,"device admin user dismatch");
         }
-
+        //去数据库中查询用户详情
+        UserInfo userInfo = userInfoService.findByPhoneNum(request.getPhoneNum());
+        LockAssert.isTrue(userInfo != null,ErrorCode.USERPHONE_NOT_EXIST,"user not exist.");
         //进行绑定操作
-        dbDeviceInfo.setUserName(request.getPhoneNum());
+        dbDeviceInfo.setPhoneNum(request.getPhoneNum());
         dbDeviceInfo.setDeviceName(request.getDeviceName());
         deviceInfoService.save(dbDeviceInfo);
 
         //如果用户关联设备表中已经存在该条记录，那么就更新这条记录
-        UserAttachedDeviceInfo dbUserAttachedDeviceInfo = userAttachedDevice.findByDeviceNumAndUserName(request.getDeviceNum(),request.getPhoneNum());
+        UserAttachedDeviceInfo dbUserAttachedDeviceInfo = userAttachedDevice.findByDeviceNumAndPhoneNum(request.getDeviceNum(),request.getPhoneNum());
         if (dbUserAttachedDeviceInfo == null)
         {
             dbUserAttachedDeviceInfo = new UserAttachedDeviceInfo();
 
             dbUserAttachedDeviceInfo.setDeviceNum(request.getDeviceNum());
+            dbUserAttachedDeviceInfo.setUserName(userInfo.getUserName());
+            dbUserAttachedDeviceInfo.setPhoneNum(userInfo.getPhoneNum());
             dbUserAttachedDeviceInfo.setPhoneNum(request.getPhoneNum());
-            dbUserAttachedDeviceInfo.setUserName(request.getPhoneNum());
             dbUserAttachedDeviceInfo.setUserType(Constant.MAIN_USER);
             dbUserAttachedDeviceInfo.setAssociateTime(DateUtil.yyyyMMddHHmm());
             dbUserAttachedDeviceInfo.setDeviceName(request.getDeviceName());
             dbUserAttachedDeviceInfo.setDeviceMac(dbDeviceInfo.getBluetoothMac());
             dbUserAttachedDeviceInfo.setVersion(dbDeviceInfo.getVersion());
-            dbUserAttachedDeviceInfo.setMainUser(dbDeviceInfo.getUserName());
+            dbUserAttachedDeviceInfo.setMainUser(dbDeviceInfo.getPhoneNum());
         }
         else
         {
@@ -129,7 +136,7 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
         respose.setResult(result);
 
         String phoneNum = request.getPhoneNum();
-        List<UserAttachedDeviceInfo> userAttachedDeviceInfos = userAttachedDevice.findByUserNameOrMainUser(phoneNum,phoneNum);
+        List<UserAttachedDeviceInfo> userAttachedDeviceInfos = userAttachedDevice.findByPhoneNumOrMainUser(phoneNum,phoneNum);
 
         if(userAttachedDeviceInfos != null)
         {
@@ -141,6 +148,7 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
                 userAttachedDevices[i] = new UserAttachedDevice();
 
                 userAttachedDevices[i].setUserName(userAttachedDeviceInfo.getUserName());
+                userAttachedDevices[i].setPhoneNum(userAttachedDeviceInfo.getPhoneNum());
                 userAttachedDevices[i].setMainName(userAttachedDeviceInfo.getMainUser());
                 userAttachedDevices[i].setBluetoothMac(userAttachedDeviceInfo.getDeviceMac());
                 userAttachedDevices[i].setDeviceName(userAttachedDeviceInfo.getDeviceName());
@@ -163,15 +171,14 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
     }
 
     @Override
-    public BindDevice4UserResponse bindDevice4User(DeviceInfo deviceInfo,String bindPhoneNum,String validDate)
+    public BindDevice4UserResponse bindDevice4User(DeviceInfo deviceInfo,UserInfo bindUserInfo,String validDate)
     {
         BindDevice4UserResponse response = new BindDevice4UserResponse();
         Result result = new Result();
         response.setResult(result);
 
         //user_device是否存在绑定关系
-        UserAttachedDeviceInfo userAttachedDeviceInfo = userAttachedDevice.findByDeviceNumAndUserName(deviceInfo.getDeviceNum(),bindPhoneNum);
-
+        UserAttachedDeviceInfo userAttachedDeviceInfo = userAttachedDevice.findByDeviceNumAndPhoneNum(deviceInfo.getDeviceNum(),bindUserInfo.getPhoneNum());
 
         if(userAttachedDeviceInfo == null)
         {
@@ -181,10 +188,11 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
             userAttachedDeviceInfo.setDeviceName(deviceInfo.getDeviceName());
             userAttachedDeviceInfo.setDeviceMac(deviceInfo.getBluetoothMac());
             userAttachedDeviceInfo.setDeviceNum(deviceInfo.getDeviceNum());
-            userAttachedDeviceInfo.setMainUser(deviceInfo.getUserName());
+            userAttachedDeviceInfo.setMainUser(deviceInfo.getPhoneNum());
             userAttachedDeviceInfo.setVersion(deviceInfo.getVersion());
             userAttachedDeviceInfo.setValidDate(validDate);
-            userAttachedDeviceInfo.setUserName(bindPhoneNum);
+            userAttachedDeviceInfo.setUserName(bindUserInfo.getUserName());
+            userAttachedDeviceInfo.setPhoneNum(bindUserInfo.getPhoneNum());
             userAttachedDeviceInfo.setUserType(Constant.SUB_USER);
         }
         else
@@ -195,6 +203,7 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
         //将数据存入user_device
         userAttachedDevice.save(userAttachedDeviceInfo);
 
+        //将数据返回给前端
         UserAttachedDevice userAttachedDevice = new UserAttachedDevice();
 
         userAttachedDevice.setValidDate(userAttachedDeviceInfo.getValidDate());
@@ -206,6 +215,7 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
         userAttachedDevice.setMainName(userAttachedDeviceInfo.getMainUser());
         userAttachedDevice.setUserName(userAttachedDeviceInfo.getUserName());
         userAttachedDevice.setUserType(userAttachedDeviceInfo.getUserType());
+        userAttachedDevice.setPhoneNum(userAttachedDeviceInfo.getPhoneNum());
 
         response.setUserAttachedDevice(userAttachedDevice);
 

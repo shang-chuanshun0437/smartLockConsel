@@ -12,8 +12,8 @@ public class UserAttachedDeviceInfo
     @Column(name = "id")
     private Integer id;
 
-    /*@Column(name = "user_name")
-    private String userName;*/
+    @Column(name = "user_name")
+    private String userName;
 
     @Column(name = "phone_num")
     private String phoneNum;
@@ -47,13 +47,13 @@ public class UserAttachedDeviceInfo
     @Column(name = "valid_date")
     private String validDate;
 
-    /*public String getUserName() {
+    public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }*/
+    }
 
     public String getDeviceNum() {
         return deviceNum;

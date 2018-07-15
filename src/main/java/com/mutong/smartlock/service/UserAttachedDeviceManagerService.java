@@ -7,6 +7,7 @@ import com.mutong.smartlock.controller.response.BindDevice4UserResponse;
 import com.mutong.smartlock.controller.response.BindDeviceResponse;
 import com.mutong.smartlock.controller.response.QueryUserAttachedDeviceRespose;
 import com.mutong.smartlock.dao.entity.DeviceInfo;
+import com.mutong.smartlock.dao.entity.UserInfo;
 
 public interface UserAttachedDeviceManagerService
 {
@@ -14,5 +15,5 @@ public interface UserAttachedDeviceManagerService
 
     QueryUserAttachedDeviceRespose queryUserAttachedDevice(QueryUserAttachedDeviceRequest request);
 
-    BindDevice4UserResponse bindDevice4User(DeviceInfo deviceInfo, String bindPhoneNum,String validDate);
+    BindDevice4UserResponse bindDevice4User(DeviceInfo deviceInfo, UserInfo bindUserInfo, String validDate);
 }

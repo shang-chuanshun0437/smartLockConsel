@@ -16,4 +16,8 @@ public interface UserAttachedDeviceService
     UserAttachedDeviceInfo save(UserAttachedDeviceInfo userAttachedDeviceInfo);
 
     List<UserAttachedDeviceInfo> findByPhoneNumOrMainUser(String phoneNum,String mainUser);
+
+    void deleteById(Integer integer);
+
+    void deleteByPhoneNumAndDeviceNum(String phoneNum,String deviceNum);
 }

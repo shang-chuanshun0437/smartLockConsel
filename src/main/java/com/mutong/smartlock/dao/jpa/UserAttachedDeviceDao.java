@@ -16,7 +16,10 @@ public interface UserAttachedDeviceDao extends JpaRepository<UserAttachedDeviceI
 
     UserAttachedDeviceInfo findByDeviceNumAndPhoneNum(String deviceNum,String phoneNum);
 
-    int deleteByUserName(String userName);
+    @Override
+    void deleteById(Integer integer);
 
-    List<UserAttachedDeviceInfo> findByPhoneNumOrMainUser(String phone,String mainUser);
+    void deleteByPhoneNumAndDeviceNum(String phoneNum,String deviceNum);
+
+    List<UserAttachedDeviceInfo> findByPhoneNumOrMainUser(String phone, String mainUser);
 }

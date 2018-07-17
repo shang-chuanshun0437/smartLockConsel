@@ -6,6 +6,7 @@ import com.mutong.smartlock.controller.request.BindDeviceRequest;
 import com.mutong.smartlock.controller.request.QueryUserAttachedDeviceRequest;
 import com.mutong.smartlock.controller.response.BindDevice4UserResponse;
 import com.mutong.smartlock.controller.response.BindDeviceResponse;
+import com.mutong.smartlock.controller.response.DeleteDeviceOfUserResponse;
 import com.mutong.smartlock.controller.response.QueryUserAttachedDeviceRespose;
 import com.mutong.smartlock.dao.entity.DeviceInfo;
 import com.mutong.smartlock.dao.entity.UserAttachedDeviceInfo;
@@ -219,6 +220,51 @@ public class UserAttachedDeviceManagerSpi implements UserAttachedDeviceManagerSe
 
         response.setUserAttachedDevice(userAttachedDevice);
 
+        return response;
+    }
+
+    @Transactional
+    @Override
+    public DeleteDeviceOfUserResponse deleteDevice(String phoneNum,String deletePhoneNum, DeviceInfo deviceInfo)
+    {
+        DeleteDeviceOfUserResponse response = new DeleteDeviceOfUserResponse();
+        Result result = new Result();
+        response.setResult(result);
+        //1、普通用户，自己删自己
+        if (phoneNum.equals(deletePhoneNum) && !phoneNum.equals(deviceInfo.getPhoneNum()))
+        {
+            userAttachedDevice.deleteByPhoneNumAndDeviceNum(deletePhoneNum,deviceInfo.getDeviceNum());
+            return response;
+        }
+        //2、管理员删普通用户
+        if(!phoneNum.equals(deletePhoneNum))
+        {
+            LockAssert.isTrue(phoneNum.equals(deviceInfo.getPhoneNum()),ErrorCode.DeviceErrorCode.MAIN_USER_MISSMATCH,"main user dismatch.");
+
+            userAttachedDevice.deleteByPhoneNumAndDeviceNum(deletePhoneNum,deviceInfo.getDeviceNum());
+            return response;
+        }
+        //3、管理员自己删自己，那么要求该设备下，没有其他用户
+
+        if(phoneNum.equals(deletePhoneNum) && phoneNum.equals(deviceInfo.getPhoneNum()))
+        {
+            List<UserAttachedDeviceInfo> userAttachedDeviceInfos = userAttachedDevice.findByDeviceNum(deviceInfo.getDeviceNum());
+            LockAssert.isTrue(userAttachedDeviceInfos != null && userAttachedDeviceInfos.size() <= 1,
+                    ErrorCode.DeviceErrorCode.OTHER_USERS_EXIST,"the device has other users.");
+
+            //管理员自己删自己，则要把device_info的管理员置空
+            deviceInfo.setPhoneNum(null);
+            deviceInfo.setDeviceName(null);
+            deviceInfoService.save(deviceInfo);
+
+            for (UserAttachedDeviceInfo userAttachedDeviceInfo : userAttachedDeviceInfos)
+            {
+                userAttachedDevice.deleteById(userAttachedDeviceInfo.getId());
+            }
+            return response;
+        }
+
+        result.setRetcode(ErrorCode.DEFAULT_ERROR);
         return response;
     }
 }

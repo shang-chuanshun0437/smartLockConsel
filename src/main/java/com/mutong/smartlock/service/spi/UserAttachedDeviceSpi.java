@@ -42,4 +42,16 @@ public class UserAttachedDeviceSpi implements UserAttachedDeviceService
     public List<UserAttachedDeviceInfo> findByPhoneNumOrMainUser(String phoneNum,String mainUser) {
         return userAttachedDevice.findByPhoneNumOrMainUser(phoneNum,mainUser);
     }
+
+    @Override
+    public void deleteById(Integer id)
+    {
+        userAttachedDevice.deleteById(id);
+    }
+
+    @Override
+    public void deleteByPhoneNumAndDeviceNum(String phoneNum,String deviceNum)
+    {
+        userAttachedDevice.deleteByPhoneNumAndDeviceNum(phoneNum,deviceNum);
+    }
 }
